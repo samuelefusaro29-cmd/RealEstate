@@ -1,0 +1,81 @@
+<div class="chatbot-wrapper" [style.bottom.px]="bottomOffset()">
+
+    <div class="chat-window" [class.open]="isOpen" role="dialog" aria-label="HwBot chat">
+        <div class="chat-header">
+            <div class="chat-header-left">
+        <span class="chat-avatar">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+               fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2a4 4 0 0 1 4 4v1h1a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3v-7a3 3 0 0 1 3-3h1V6a4 4 0 0 1 4-4z"/>
+            <circle cx="9" cy="12" r="1" fill="currentColor"/>
+            <circle cx="15" cy="12" r="1" fill="currentColor"/>
+            <path d="M9 17c.8.8 2 1 3 1s2.2-.2 3-1"/>
+          </svg>
+        </span>
+                <div>
+                    <span class="chat-title">HwBot</span>
+                    <span class="chat-subtitle">Assistente immobiliare</span>
+                </div>
+            </div>
+            <button class="chat-close" (click)="closeChat()" aria-label="Chiudi chat">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                    <line x1="18" y1="6" x2="6" y2="18"/>
+                    <line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+            </button>
+        </div>
+
+        <div class="chat-messages">
+            <div
+                    *ngFor="let msg of messages"
+                    class="chat-bubble"
+                    [class.user]="msg.role === 'user'"
+                    [class.bot]="msg.role === 'bot'"
+            >
+                {{ msg.text }}
+            </div>
+            <div *ngIf="isLoading" class="chat-bubble bot typing">
+                <span></span><span></span><span></span>
+            </div>
+            <div #messagesEnd></div>
+        </div>
+
+        <div class="chat-input-area">
+            <input
+                    type="text"
+                    class="chat-input"
+                    placeholder="Scrivi un messaggio..."
+                    [(ngModel)]="inputText"
+                    (keydown)="onKeyDown($event)"
+                    [disabled]="isLoading"
+                    aria-label="Messaggio per HwBot"
+            />
+            <button
+                    class="chat-send"
+                    (click)="sendMessage()"
+                    [disabled]="isLoading || !inputText.trim()"
+                    aria-label="Invia messaggio"
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="22" y1="2" x2="11" y2="13"/>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <button class="fab" (click)="toggleChat()" [class.active]="isOpen" aria-label="Apri HwBot">
+        <svg *ngIf="!isOpen" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <svg *ngIf="isOpen" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24"
+             fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+    </button>
+
+</div>

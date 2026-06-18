@@ -1,0 +1,20 @@
+<footer class="site-footer mt-5">
+    <div class="container py-4">
+        <div class="row gy-3 align-items-center">
+            <div class="col-md-6">
+                <div class="serif fs-4 text-white">hw26</div>
+                <p class="small mb-0" style="color: rgba(255,255,255,0.65);">
+                    Annunci di vendita di immobili in Italia.
+                </p>
+            </div>
+            <div class="col-md-6 text-md-end small footer-links">
+                <a routerLink="/properties" class="me-3">Annunci</a>
+                @if (!authSvc.isLoggedIn()) {
+                    <a routerLink="/login" class="me-3">Accedi</a>
+                }
+                <a routerLink="/terms" class="me-3">Termini e condizioni</a>
+                <span style="color: rgba(255,255,255,0.5);">&copy; {{ year }} hw26RealEstate</span>
+            </div>
+        </div>
+    </div>
+</footer>

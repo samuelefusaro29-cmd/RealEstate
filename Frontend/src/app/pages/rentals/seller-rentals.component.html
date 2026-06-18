@@ -1,0 +1,98 @@
+<section class="page-pad">
+    <div class="container">
+
+        <h1 class="serif mb-4">Gestione affitti</h1>
+
+        @if (msg()) {
+            <div class="alert alert-info small mb-3">{{ msg() }}</div>
+        }
+
+        <div class="hw-tabs mb-4">
+            <button class="hw-tab" [class.active]="tab() === 'requests'" (click)="tab.set('requests')">
+                Richieste ricevute
+                @if (pendingCount()) {
+                    <span class="hw-tab-count">{{ pendingCount() }}</span>
+                }
+            </button>
+            <button class="hw-tab" [class.active]="tab() === 'contracts'" (click)="tab.set('contracts')">
+                Contratti
+                @if (contracts().length) {
+                    <span class="hw-tab-count">{{ contracts().length }}</span>
+                }
+            </button>
+        </div>
+
+        @if (loading()) { <p class="muted">Caricamento...</p> }
+
+        @if (tab() === 'requests') {
+            @if (requests().length === 0) {
+                <div class="empty-state"><p class="muted">Nessuna richiesta ricevuta.</p></div>
+            } @else {
+                <div class="rental-list">
+                    @for (r of requests(); track r.id) {
+                        <div class="rental-card">
+                            <div class="rental-card-top">
+                                <div>
+                                    <a [routerLink]="['/properties', r.postId]" class="fw-semibold">Annuncio #{{ r.postId }}</a>
+                                    <div class="mt-1">
+                                        <span class="status-badge" [ngClass]="statusClass(r.status)">{{ statusLabel(r.status) }}</span>
+                                    </div>
+                                </div>
+                                <span class="muted small">Acquirente #{{ r.buyerId }}</span>
+                            </div>
+                            @if (r.message) {
+                                <p class="rental-message">"{{ r.message }}"</p>
+                            }
+                            <div class="rental-dates">
+                                <span>📅 Dal <strong>{{ r.desiredStart | date:'dd/MM/yyyy' }}</strong></span>
+                                <span>al <strong>{{ r.desiredEnd | date:'dd/MM/yyyy' }}</strong></span>
+                            </div>
+                            @if (r.status === 'PENDING') {
+                                <div class="rental-actions">
+                                    <button class="btn btn-sm btn-hw" (click)="accept(r)">✓ Accetta</button>
+                                    <button class="btn btn-sm btn-outline-danger" (click)="reject(r)">✗ Rifiuta</button>
+                                </div>
+                            }
+                            <div class="rental-card-footer">
+                                <span class="muted small">Ricevuta il {{ r.createdAt | date:'dd/MM/yyyy' }}</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+
+        @if (tab() === 'contracts') {
+            @if (contracts().length === 0) {
+                <div class="empty-state"><p class="muted">Nessun contratto ancora.</p></div>
+            } @else {
+                <div class="rental-list">
+                    @for (c of contracts(); track c.id) {
+                        <div class="rental-card">
+                            <div class="rental-card-top">
+                                <div>
+                                    <a [routerLink]="['/properties', c.postId]" class="fw-semibold">Annuncio #{{ c.postId }}</a>
+                                    <div class="mt-1">
+                                        <span class="status-badge" [ngClass]="statusClass(c.status)">{{ statusLabel(c.status) }}</span>
+                                    </div>
+                                </div>
+                                <span class="price-new fs-5">{{ formatPrice(c.monthlyPrice) }}/mese</span>
+                            </div>
+                            <div class="rental-dates">
+                                <span>📅 Dal <strong>{{ c.startDate | date:'dd/MM/yyyy' }}</strong></span>
+                                <span>al <strong>{{ c.endDate | date:'dd/MM/yyyy' }}</strong></span>
+                            </div>
+                            <div class="rental-card-footer">
+                                <span class="muted small">Inquilino #{{ c.tenantId }}</span>
+                                @if (c.status === 'ACTIVE') {
+                                    <button class="btn btn-sm btn-outline-danger" (click)="terminate(c)">Termina contratto</button>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+
+    </div>
+</section>

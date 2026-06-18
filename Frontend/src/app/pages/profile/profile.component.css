@@ -1,0 +1,98 @@
+.profile-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--hw-color, #1a1a1a);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+    font-weight: 600;
+    flex-shrink: 0;
+    text-transform: uppercase;
+}
+
+.tab-btn {
+    padding: 0.35rem 1rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border: 1px solid transparent;
+    background: transparent;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s, border-color 0.2s;
+    white-space: nowrap;
+    line-height: 1.5;
+}
+
+.tab-btn-green {
+    color: var(--hw-primary);
+    border-color: var(--hw-primary);
+}
+.tab-btn-green:hover,
+.tab-btn-green.active {
+    background: var(--hw-primary);
+    color: #fff;
+    border-color: var(--hw-primary);
+}
+
+.tab-btn-red {
+    color: #b02a37;
+    border-color: #b02a37;
+}
+.tab-btn-red:hover,
+.tab-btn-red.active {
+    background: #b02a37;
+    color: #fff;
+    border-color: #b02a37;
+}
+
+.danger-zone {
+    border: 1.5px solid #f1aeb5;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff8f8;
+}
+
+.danger-zone-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid #f1aeb5;
+    background: #fff0f0;
+}
+
+.danger-zone-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #fde8e8;
+    border: 1.5px solid #f1aeb5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #b02a37;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.danger-zone-body {
+    padding: 1.25rem 1.5rem;
+}
+
+.btn-cancel {
+    background: transparent;
+    color: #b13434;
+    border: 1px solid #b13434;
+    padding: 0.45rem 1.2rem;
+    border-radius: 999px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+}
+.btn-cancel:hover { background: #b13434; color: #fff; }

@@ -1,0 +1,2 @@
+ALTER TABLE real_estate
+ALTER COLUMN description TYPE VARCHAR(1000);

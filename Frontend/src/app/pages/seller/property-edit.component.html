@@ -1,0 +1,159 @@
+<section class="page-pad">
+    <div class="container edit-container">
+
+        <a [routerLink]="auth.hasRole('ADMIN') ? '/admin' : '/seller'"
+           class="muted small text-decoration-none back-link">
+            <i class="bi bi-arrow-left"></i>
+            {{ auth.hasRole('ADMIN') ? 'Torna al pannello admin' : 'Torna ai miei annunci' }}
+        </a>
+
+        <h1 class="serif mt-2 mb-4">{{ isNew ? 'Nuovo annuncio' : 'Modifica annuncio' }}</h1>
+
+        <form (ngSubmit)="save()" #f="ngForm" class="bg-white border rounded-3 p-4">
+
+            <h6 class="text-uppercase muted small mb-3">Dati annuncio</h6>
+
+            <div class="mb-3">
+                <label class="form-label small text-uppercase muted">Titolo</label>
+                <input class="form-control" name="title" [(ngModel)]="model.title"
+                       required minlength="5" maxlength="120" #titleField="ngModel">
+                @if (titleField.invalid && titleField.touched) {
+                    @if (titleField.errors?.['required']) {
+                        <div class="text-danger small mt-1">Il titolo è obbligatorio.</div>
+                    } @else if (titleField.errors?.['minlength']) {
+                        <div class="text-danger small mt-1">Minimo 5 caratteri.</div>
+                    }
+                }
+            </div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label small text-uppercase muted">Prezzo (€)</label>
+                    <input type="number" class="form-control" name="price" [(ngModel)]="model.price"
+                           placeholder="Es: 150000" required min="1" #priceField="ngModel">
+                    @if (priceField.invalid && priceField.touched) {
+                        @if (priceField.errors?.['required']) {
+                            <div class="text-danger small mt-1">Il prezzo è obbligatorio.</div>
+                        } @else if (priceField.errors?.['min']) {
+                            <div class="text-danger small mt-1">Il prezzo deve essere maggiore di 0.</div>
+                        }
+                    }
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label small text-uppercase muted">Tipo annuncio</label>
+                    <div class="d-flex gap-2 mt-1">
+                        <button type="button"
+                                class="btn btn-sm flex-fill"
+                                [class.btn-hw]="model.listingType === 'SALE'"
+                                [class.btn-outline-secondary]="model.listingType !== 'SALE'"
+                                (click)="model.listingType = 'SALE'">
+                            <i class="bi bi-tag me-1"></i>Vendita
+                        </button>
+                        <button type="button"
+                                class="btn btn-sm flex-fill"
+                                [class.btn-hw]="model.listingType === 'RENT'"
+                                [class.btn-outline-secondary]="model.listingType !== 'RENT'"
+                                (click)="model.listingType = 'RENT'">
+                            <i class="bi bi-key me-1"></i>Affitto
+                        </button>
+                    </div>
+                    <div class="form-text muted small mt-1">
+                        @if (model.listingType === 'RENT') { Il prezzo sarà inteso come canone mensile (€/mese). }
+                        @if (model.listingType === 'SALE') { Il prezzo sarà inteso come prezzo di vendita. }
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label small text-uppercase muted">Descrizione</label>
+                    <textarea class="form-control" rows="4" name="description"
+                              [(ngModel)]="model.description" required minlength="10"
+                              #descField="ngModel"></textarea>
+                    @if (descField.invalid && descField.touched) {
+                        @if (descField.errors?.['required']) {
+                            <div class="text-danger small mt-1">La descrizione è obbligatoria.</div>
+                        } @else if (descField.errors?.['minlength']) {
+                            <div class="text-danger small mt-1">Minimo 10 caratteri.</div>
+                        }
+                    }
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label small text-uppercase muted">Foto</label>
+                    <div class="mb-2">
+                        <input type="file" id="photoInput" accept="image/*" multiple
+                               class="d-none" (change)="onFilesSelected($event)">
+                        <label for="photoInput" class="btn btn-outline-secondary btn-sm"
+                               [class.disabled]="uploading()">
+                            <i class="bi bi-upload me-1"></i>
+                            {{ uploading() ? 'Caricamento...' : 'Seleziona immagini dal PC' }}
+                        </label>
+                    </div>
+                    @if (uploadedUrls().length > 0) {
+                        <div class="d-flex flex-wrap gap-2 mt-2">
+                            @for (url of uploadedUrls(); track url) {
+                                <div class="position-relative" style="width:100px; height:100px;">
+                                    <img [src]="url" alt="foto"
+                                         style="width:100px; height:100px; object-fit:cover; border-radius:6px; border:1px solid #dee2e6;">
+                                    <button type="button"
+                                            class="btn btn-sm btn-danger position-absolute top-0 end-0"
+                                            style="padding:1px 5px; font-size:11px; line-height:1.2;"
+                                            (click)="removePhoto(url)">✕</button>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <hr class="my-4">
+
+            <h6 class="text-uppercase muted small mb-3">Dati immobile</h6>
+
+            <div class="row g-3 mb-3">
+                <div class="col-md-4">
+                    <label class="form-label small text-uppercase muted">Tipo immobile</label>
+                    <select class="form-select" name="reType" [(ngModel)]="re.type" required>
+                        @for (c of categories; track c.value) {
+                            <option [value]="c.value">{{ c.label }}</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-uppercase muted">N° stanze</label>
+                    <input type="number" class="form-control" name="rooms" [(ngModel)]="re.numberOfRooms"
+                           placeholder="Es: 3" min="1" max="50" #roomsField="ngModel">
+                    @if (roomsField.invalid && roomsField.touched) {
+                        <div class="text-danger small mt-1">Inserire un valore tra 1 e 50.</div>
+                    }
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label small text-uppercase muted">Superficie (m²)</label>
+                    <input type="number" class="form-control" name="sqm" [(ngModel)]="re.squareMetres"
+                           placeholder="Es: 90" required min="1" max="99999" #sqmField="ngModel">
+                    @if (sqmField.invalid && sqmField.touched) {
+                        @if (sqmField.errors?.['required']) {
+                            <div class="text-danger small mt-1">La superficie è obbligatoria.</div>
+                        } @else if (sqmField.errors?.['min']) {
+                            <div class="text-danger small mt-1">La superficie deve essere maggiore di 0.</div>
+                        }
+                    }
+                </div>
+            </div>
+
+            @if (error()) {
+                <div class="alert alert-danger mt-3 py-2 small">{{ error() }}</div>
+            }
+
+            <div class="mt-4 d-flex gap-2">
+                <button class="btn btn-hw" [disabled]="f.invalid || saving()">
+                    {{ saving() ? 'Salvataggio...' : 'Salva' }}
+                </button>
+                <a [routerLink]="auth.hasRole('ADMIN') ? '/admin' : '/seller'" class="btn btn-link">
+                    Annulla
+                </a>
+            </div>
+
+        </form>
+    </div>
+</section>

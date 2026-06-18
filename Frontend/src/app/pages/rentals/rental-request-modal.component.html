@@ -1,0 +1,53 @@
+<div class="modal-backdrop" (click)="close()"></div>
+
+<div class="modal-panel">
+    <div class="modal-header">
+        <h5 class="serif mb-0">Richiesta di affitto</h5>
+        <button class="btn-close" (click)="close()" aria-label="Chiudi"></button>
+    </div>
+
+    <div class="modal-body">
+        @if (error()) {
+            <div class="alert alert-danger small">{{ error() }}</div>
+        }
+
+        <!-- ✅ NUOVO: mostra periodi già occupati -->
+        @if (bookedPeriods.length > 0) {
+            <div class="alert alert-warning small mb-3">
+                <strong>Periodi già occupati:</strong>
+                <ul class="mb-0 mt-1 ps-3">
+                    @for (p of bookedPeriods; track p.start) {
+                        <li>{{ p.start }} → {{ p.end }}</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <div class="mb-3">
+            <label class="form-label small fw-semibold">Data inizio desiderata</label>
+            <input type="date" class="form-control"
+                   [(ngModel)]="desiredStart"
+                   [min]="today" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-semibold">Data fine desiderata</label>
+            <input type="date" class="form-control"
+                   [(ngModel)]="desiredEnd"
+                   [min]="desiredStart || today" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label small fw-semibold">Messaggio al proprietario (opzionale)</label>
+            <textarea class="form-control" rows="3" [(ngModel)]="message"
+                      placeholder="Es. Siamo una coppia senza animali..."></textarea>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-outline-secondary btn-sm" (click)="close()">Annulla</button>
+        <button class="btn btn-hw btn-sm" (click)="submit()" [disabled]="loading()">
+            {{ loading() ? 'Invio...' : 'Invia richiesta' }}
+        </button>
+    </div>
+</div>

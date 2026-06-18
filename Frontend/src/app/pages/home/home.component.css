@@ -1,0 +1,70 @@
+.hero-content {
+    min-height: 520px;
+}
+
+.hero-text {
+    max-width: 720px;
+}
+
+.hero-eyebrow {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    opacity: 0.85;
+    margin-bottom: 1rem;
+}
+
+.hero-lead {
+    opacity: 0.9;
+}
+
+
+.utenza-icon {
+    font-size: 2.5rem;
+}
+
+
+@media (max-width: 768px) {
+    .hero-content {
+        min-height: 420px;
+    }
+}
+
+.telegram-banner {
+    background-color: #0088cc;
+    color: #ffffff;
+    padding: 1.1rem 0;
+}
+
+.telegram-title {
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+.telegram-sub {
+    font-size: 0.82rem;
+    opacity: 0.88;
+}
+
+.btn-telegram {
+    background-color: #ffffff;
+    color: #0088cc;
+    font-weight: 600;
+    font-size: 0.875rem;
+    border: none;
+    padding: 0.45rem 1.1rem;
+    border-radius: 6px;
+    white-space: nowrap;
+    transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+.btn-telegram:hover {
+    background-color: #e0f3fc;
+    color: #006699;
+}
+
+@media (max-width: 576px) {
+    .telegram-banner {
+        text-align: center;
+    }
+}

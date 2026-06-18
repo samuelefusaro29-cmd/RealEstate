@@ -1,0 +1,14 @@
+.site-footer {
+    background: var(--hw-primary, #01696f);
+    border-top: none !important;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.85);
+    text-decoration: none;
+    transition: color 150ms ease;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}

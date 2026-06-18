@@ -1,0 +1,121 @@
+<a [routerLink]="property.sold ? null : ['/properties', property.id]"
+   [class.sold-card-link]="property.sold"
+   class="text-decoration-none text-reset">
+    <article class="property-card h-100" [class.card-sold]="property.sold">
+
+        <div class="img-wrap">
+            <img
+                    [src]="property.photos[0] || placeholder"
+                    [alt]="property.title"
+                    loading="lazy"
+            />
+            <div class="img-badges">
+                <span class="card-badge badge-type">{{ listingLabel }}</span>
+                <span class="card-badge badge-cat">{{ categoryLabel }}</span>
+            </div>
+            @if (property.photos.length > 1) {
+                <span class="photo-count">
+                    <i class="bi bi-images"></i> {{ property.photos.length }}
+                </span>
+            }
+            @if (property.sold) {
+                <div class="sold-ribbon">VENDUTO</div>
+            }
+        </div>
+
+        <div class="card-body d-flex flex-column flex-grow-1">
+
+            <div class="price-row mb-1">
+                <div class="d-flex flex-column">
+                    @if (property.oldPrice && property.oldPrice > property.price) {
+                        <span class="price-old">{{ property.oldPrice | number:'1.0-0' }} €</span>
+                    }
+                    <span class="price-main">
+                        € {{ property.price | number:'1.0-0' }}
+                        @if (property.listingType === 'RENT') {
+                            <small class="price-suffix">/mese</small>
+                        }
+                    </span>
+                </div>
+                @if (auction()) {
+                    <div class="auction-pill">
+                        <span class="auction-pill-label">Asta</span>
+                        <span class="auction-pill-price">{{ formatPrice(auction()!.currentBest) }}</span>
+                    </div>
+                }
+            </div>
+
+            <h5 class="card-title serif">{{ property.title }}</h5>
+            <p class="card-location">
+                <i class="bi bi-geo-alt-fill"></i>
+                {{ property.city }}@if (property.address) {, {{ property.address }}}
+            </p>
+
+            <div class="features-grid">
+                @if (property.numberOfRooms) {
+                    <span class="feat-item">
+                        <i class="bi bi-grid"></i>
+                        {{ property.numberOfRooms }} loc.
+                    </span>
+                }
+                <span class="feat-item">
+                    <i class="bi bi-arrows-angle-expand"></i>
+                    {{ property.squareMeters }} m²
+                </span>
+                @if (property.floor != null && property.floor >= 0) {
+                    <span class="feat-item">
+                        <i class="bi bi-building"></i>
+                        Piano {{ property.floor === 0 ? 'T' : property.floor }}
+                    </span>
+                }
+                @if (property.hasElevator) {
+                    <span class="feat-item">
+                        <i class="bi bi-arrow-up-square"></i>
+                        Ascensore
+                    </span>
+                }
+
+                @if (property.hasGarden) {
+                    <span class="feat-item">
+                        <i class="bi bi-tree"></i>
+                        Giardino
+                    </span>
+                }
+                @if (property.hasPool) {
+                    <span class="feat-item">
+                        <i class="bi bi-water"></i>
+                        Piscina
+                    </span>
+                }
+
+                @if (property.cubature) {
+                    <span class="feat-item">
+                        <i class="bi bi-box-seam"></i>
+                        {{ property.cubature }} m³
+                    </span>
+                }
+                @if (property.plannedUse) {
+                    <span class="feat-item">
+                        <i class="bi bi-building-check"></i>
+                        {{ property.plannedUse }}
+                    </span>
+                }
+                @if (property.cropType) {
+                    <span class="feat-item">
+                        <i class="bi bi-flower1"></i>
+                        {{ property.cropType }}
+                    </span>
+                }
+            </div>
+
+            @if (property.description) {
+                <p class="card-desc">{{ property.description }}</p>
+            }
+
+            <div class="card-footer-row mt-auto">
+                <span class="card-code">#{{ property.code }}</span>
+            </div>
+
+        </div>
+    </article>
+</a>

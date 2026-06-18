@@ -1,0 +1,528 @@
+<section class="page-pad">
+    <div class="container detail-container">
+
+        @if (loading()) {
+            <p class="muted">Caricamento…</p>
+
+        } @else if (property() === null) {
+            <p class="muted">Annuncio non trovato.</p>
+
+        } @else {
+            <h1 class="serif mb-1">{{ property()!.title }}</h1>
+            <p class="muted mb-3">
+                <i class="bi bi-geo-alt"></i>
+                {{ property()!.city }} — {{ property()!.address }}
+            </p>
+
+            @if (property()!.photos.length > 0) {
+                <div class="carousel-wrap mb-4">
+                    <img [src]="property()!.photos[currentPhoto()]"
+                         [alt]="property()!.title"
+                         class="carousel-img"
+                         loading="lazy" />
+                    @if (property()!.photos.length > 1) {
+                        <button class="carousel-btn prev" (click)="prevPhoto()" aria-label="Precedente">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="carousel-btn next" (click)="nextPhoto()" aria-label="Successiva">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                        <div class="carousel-dots">
+                            @for (ph of property()!.photos; track $index) {
+                                <span class="dot" [class.active]="$index === currentPhoto()" (click)="goToPhoto($index)"></span>
+                            }
+                        </div>
+                    }
+                </div>
+            } @else {
+                <img [src]="placeholder"
+                     [alt]="property()!.title"
+                     class="detail-photo rounded-3 mb-4 w-100"
+                     loading="lazy" width="900" height="420" />
+            }
+
+            <div class="row g-4">
+
+                <div class="col-md-8">
+                    <div class="d-flex gap-2 mb-3 flex-wrap">
+                        <span class="hw-badge primary">{{ listingLabel() }}</span>
+                        <span class="hw-badge">{{ catLabel() }}</span>
+                        <span class="hw-badge">#{{ property()!.code }}</span>
+                    </div>
+
+                    <p>{{ property()!.description }}</p>
+
+                    <div class="info-grid mt-4">
+                        <div class="info-item">
+                            <i class="bi bi-rulers info-icon"></i>
+                            <span class="info-label">Superficie</span>
+                            <span class="info-value">{{ property()!.squareMeters }} m²</span>
+                        </div>
+
+                        @if (property()!.numberOfRooms != null) {
+                            <div class="info-item">
+                                <i class="bi bi-door-open info-icon"></i>
+                                <span class="info-label">Locali</span>
+                                <span class="info-value">{{ property()!.numberOfRooms }}</span>
+                            </div>
+                        }
+
+
+                        @if (property()!.floor != null) {
+                            <div class="info-item">
+                                <i class="bi bi-building info-icon"></i>
+                                <span class="info-label">Piano</span>
+                                <span class="info-value">{{ property()!.floor }}</span>
+                            </div>
+                        }
+
+                        @if (property()!.hasElevator) {
+                            <div class="info-item">
+                                <i class="bi bi-arrow-up-square info-icon"></i>
+                                <span class="info-label">Ascensore</span>
+                                <span class="info-value">Sì</span>
+                            </div>
+                        }
+
+
+                        @if (property()!.hasGarden) {
+                            <div class="info-item">
+                                <i class="bi bi-tree info-icon"></i>
+                                <span class="info-label">Giardino</span>
+                                <span class="info-value">Sì</span>
+                            </div>
+                        }
+
+                        @if (property()!.hasPool) {
+                            <div class="info-item">
+                                <i class="bi bi-water info-icon"></i>
+                                <span class="info-label">Piscina</span>
+                                <span class="info-value">Sì</span>
+                            </div>
+                        }
+
+
+                        @if (property()!.isElectric) {
+                            <div class="info-item">
+                                <i class="bi bi-lightning-charge info-icon"></i>
+                                <span class="info-label">Colonnina ricarica</span>
+                                <span class="info-value">Sì</span>
+                            </div>
+                        }
+
+                        @if (property()!.cubature != null) {
+                            <div class="info-item">
+                                <i class="bi bi-box info-icon"></i>
+                                <span class="info-label">Cubatura</span>
+                                <span class="info-value">{{ property()!.cubature }} m³</span>
+                            </div>
+                        }
+
+                        @if (property()!.plannedUse != null) {
+                            <div class="info-item">
+                                <i class="bi bi-clipboard info-icon"></i>
+                                <span class="info-label">Destinazione d'uso</span>
+                                <span class="info-value">{{ property()!.plannedUse }}</span>
+                            </div>
+                        }
+
+                        @if (property()!.cropType != null) {
+                            <div class="info-item">
+                                <i class="bi bi-flower1 info-icon"></i>
+                                <span class="info-label">Tipo coltura</span>
+                                <span class="info-value">{{ property()!.cropType }}</span>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="seller-box mt-4 p-3 border rounded-3 bg-white">
+                        <p class="small text-uppercase muted mb-2">Venditore</p>
+                        @if (seller()) {
+                            <p class="mb-1 fw-semibold">{{ seller()!.name }} {{ seller()!.surname }}</p>
+                            <p class="muted small mb-0"><i class="bi bi-envelope"></i> {{ seller()!.email }}</p>
+                        } @else {
+                            <p class="muted small mb-0">{{ property()!.sellerName }}</p>
+                        }
+                        @if (authSvc.hasRole('BUYER')) {
+                            <button class="btn btn-hw-outline btn-sm mt-3" (click)="openModal()">
+                                <i class="bi bi-envelope me-2"></i>Contatta il venditore
+                            </button>
+                        }
+                    </div>
+
+                    @if (auction()) {
+                        <div class="auction-info-banner mt-3">
+                            <div class="auction-banner-dot"></div>
+                            <div class="flex-grow-1">
+                                <span class="auction-banner-title">Asta in corso</span>
+                                <span class="auction-banner-price">{{ formatPrice(auction()!.currentBest) }}</span>
+                                <span class="auction-banner-expiry">
+                                    <i class="bi bi-clock me-1"></i>Scade il {{ formatEndDate(auction()!.endDate) }}
+                                </span>
+                            </div>
+
+                            @if (authSvc.role() === 'BUYER') {
+                                @if (buyerIsWinning()) {
+                                    <div class="bid-winning-badge">
+                                        <i class="bi bi-trophy-fill me-1"></i>
+                                        La tua offerta di {{ formatPrice(auction()!.currentBest) }} sta vincendo
+                                    </div>
+                                } @else {
+                                    <button class="btn-partecipa" (click)="openBidModal()">Partecipa</button>
+                                }
+                            }
+
+                            @if (authSvc.role() === 'SELLER') {
+                                <button class="btn-partecipa" (click)="openBidHistory()">Cronologia offerte</button>
+                            }
+                        </div>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <div class="price-box">
+                        <p class="mb-1 muted small text-uppercase price-label">Prezzo</p>
+                        @if (property()!.oldPrice && property()!.oldPrice! > property()!.price) {
+                            <span class="price-old">{{ property()!.oldPrice | number:'1.0-0' }} €</span>
+                        }
+                        <p class="price-current mb-0">
+                            {{ property()!.price | number:'1.0-0' }} €
+                            @if (property()!.listingType === 'RENT') {
+                                <small class="muted">/mese</small>
+                            }
+                        </p>
+                    </div>
+
+                    @if (property()!.listingType === 'RENT' && authSvc.hasRole('BUYER')) {
+                        @if (rentalRequestSent()) {
+                            <div class="alert alert-success mt-3 small mb-0">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                Richiesta inviata! Il venditore ti risponderà a breve.
+                                <div class="mt-2">
+                                    <a routerLink="/my-rentals" class="btn btn-hw-outline btn-sm w-100">
+                                        <i class="bi bi-key me-1"></i>Vedi i miei affitti
+                                    </a>
+                                </div>
+                            </div>
+                        } @else {
+                            <button class="btn btn-hw w-100 mt-3" (click)="showRentalModal.set(true)">
+                                <i class="bi bi-key me-2"></i>Richiedi affitto
+                            </button>
+                        }
+                    }
+
+                    @if (property()!.latitude && property()!.longitude) {
+                        <div class="map-box mt-3">
+                            <p class="small text-uppercase muted mb-2">
+                                <i class="bi bi-geo-alt-fill text-danger me-1"></i>Posizione immobile
+                            </p>
+                            <div class="map-preview-wrap" (click)="openMaps()" title="Apri in Google Maps">
+                                <iframe [src]="mapsPreviewUrl"
+                                        class="map-iframe"
+                                        frameborder="0"
+                                        scrolling="no"
+                                        loading="lazy"
+                                        title="Mappa posizione immobile"
+                                        aria-label="Mappa della posizione dell'immobile">
+                                </iframe>
+                                <div class="map-overlay">
+                                    <i class="bi bi-box-arrow-up-right"></i> Apri in Google Maps
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <hr class="my-4" />
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h3 class="serif mb-0">Recensioni</h3>
+                @if (authSvc.hasRole('BUYER')) {
+                    <button class="btn btn-hw-outline btn-sm" (click)="openReviewForm()">
+                        <i class="bi bi-plus-lg me-1"></i>Scrivi una recensione
+                    </button>
+                }
+            </div>
+
+            @if (reviews().length === 0) {
+                <p class="muted">Nessuna recensione ancora.</p>
+            } @else {
+                @for (r of reviews(); track r.id) {
+                    <div class="review-card mb-3">
+                        @if (editingReviewId() === r.id) {
+                            <div class="review-form-body">
+                                <div class="review-form-field">
+                                    <label class="review-form-label">Titolo</label>
+                                    <input type="text" class="form-control form-control-sm"
+                                           [ngModel]="editTitle()" (ngModelChange)="editTitle.set($event)" />
+                                </div>
+                                <div class="review-form-field">
+                                    <label class="review-form-label">Voto</label>
+                                    <select class="form-select form-select-sm"
+                                            [ngModel]="editRating()" (ngModelChange)="editRating.set($event)">
+                                        @for (n of [1,2,3,4,5]; track n) {
+                                            <option [value]="n">{{ n }} ★</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="review-form-field">
+                                    <label class="review-form-label">Descrizione</label>
+                                    <textarea class="form-control form-control-sm" rows="3"
+                                              [ngModel]="editComment()" (ngModelChange)="editComment.set($event)"></textarea>
+                                </div>
+                                <div class="review-form-actions">
+                                    <button class="btn-cancel" (click)="cancelEdit()">Annulla</button>
+                                    <button class="btn btn-hw-outline btn-sm" (click)="saveEdit(r)">
+                                        <i class="bi bi-check-lg me-1"></i>Salva
+                                    </button>
+                                </div>
+                            </div>
+                        } @else {
+                            <div class="review-card-header">
+                                <div class="review-card-meta">
+                                    <strong class="review-card-author">{{ r.author }}</strong>
+                                    <div class="review-card-stars">
+                                        @for (n of [1,2,3,4,5]; track n) {
+                                            <i class="bi" [class.bi-star-fill]="n <= r.rating" [class.bi-star]="n > r.rating"></i>
+                                        }
+                                    </div>
+                                </div>
+                                @if (canManageReview(r)) {
+                                    <div class="review-card-actions">
+                                        <button class="review-action-btn" (click)="startEdit(r)" aria-label="Modifica recensione">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="review-action-btn danger" (click)="deleteReview(r)" aria-label="Elimina recensione">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                }
+                            </div>
+                            <p class="mb-1 fw-semibold small">{{ r.title }}</p>
+                            <p class="mb-0 small">{{ r.description }}</p>
+                        }
+                    </div>
+                }
+            }
+        }
+
+    </div>
+</section>
+
+@if (showModal()) {
+    <div class="modal-backdrop" (click)="closeModal()"></div>
+    <div class="modal-box rounded-3 p-4 bg-white shadow-lg">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="serif mb-0">Contatta il venditore</h5>
+            <button class="btn-close" (click)="closeModal()" aria-label="Chiudi"></button>
+        </div>
+        @if (contactSent()) {
+            <div class="contact-success-state">
+                <i class="bi bi-check-circle-fill contact-success-icon"></i>
+                <p class="fw-semibold mb-1">Messaggio inviato!</p>
+                <p class="muted small mb-3">Il venditore ti risponderà via email.</p>
+                <button class="btn btn-hw-outline btn-sm" (click)="closeModal()">Chiudi</button>
+            </div>
+        } @else {
+            <div class="mb-3">
+                <label class="form-label small text-uppercase muted">Motivo del contatto</label>
+                <div class="contact-reasons">
+                    @for (r of contactReasons; track r.value) {
+                        <label class="contact-reason-chip" [class.selected]="contactReason === r.value">
+                            <input type="radio" name="contactReason" [value]="r.value"
+                                   [(ngModel)]="contactReason" hidden />
+                            <i class="bi {{ r.icon }}"></i>
+                            {{ r.label }}
+                        </label>
+                    }
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small text-uppercase muted">Messaggio</label>
+                <textarea class="form-control" rows="4" [(ngModel)]="contactMsg"
+                          placeholder="Scrivi il tuo messaggio al venditore…"></textarea>
+            </div>
+            @if (contactError()) {
+                <div class="alert alert-danger small py-2">{{ contactError() }}</div>
+            }
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn-cancel" (click)="closeModal()">Annulla</button>
+                <button class="btn btn-hw"
+                        [disabled]="!contactMsg.trim() || sending()"
+                        (click)="sendContact()">
+                    @if (sending()) { <span class="spinner-border spinner-border-sm me-2"></span> }
+                    Invia messaggio
+                </button>
+            </div>
+        }
+    </div>
+}
+
+@if (reviewAlreadyExists()) {
+    <div class="modal-backdrop" (click)="closeReviewForm()"></div>
+    <div class="modal-box rounded-3 p-4 bg-white shadow-lg">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="serif mb-0">Recensione già presente</h5>
+            <button class="btn-close" (click)="closeReviewForm()" aria-label="Chiudi"></button>
+        </div>
+        <div class="text-center py-2">
+            <i class="bi bi-info-circle-fill fs-2 mb-3 d-block" style="color: var(--hw-accent);"></i>
+            <p class="mb-4">Hai già scritto una recensione per questo annuncio.<br>Puoi modificare quella esistente.</p>
+            <div class="d-flex gap-2 justify-content-center">
+                <button class="btn-cancel" (click)="closeReviewForm()">Annulla</button>
+                <button class="btn btn-hw-outline btn-sm" (click)="goToEditMyReview()">
+                    <i class="bi bi-pencil me-1"></i>Modifica la mia recensione
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showReviewForm()) {
+    <div class="modal-backdrop" (click)="closeReviewForm()"></div>
+    <div class="modal-box-wrapper">
+        <div class="modal-box rounded-3 bg-white shadow-lg" (click)="$event.stopPropagation()">
+            <div class="review-modal-header">
+                <div class="review-modal-header-icon">
+                    <i class="bi bi-star-fill"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <h5 class="serif mb-0">Scrivi una recensione</h5>
+                    <p class="muted small mb-0">{{ property()!.title }}</p>
+                </div>
+                <button class="btn-close" (click)="closeReviewForm()" aria-label="Chiudi"></button>
+            </div>
+            <div class="review-form-body">
+                <div class="review-form-field">
+                    <label class="review-form-label">Titolo</label>
+                    <input type="text" class="form-control"
+                           [ngModel]="newTitle()" (ngModelChange)="newTitle.set($event)"
+                           placeholder="Es: Ottimo appartamento" />
+                </div>
+                <div class="review-form-field">
+                    <label class="review-form-label">Voto</label>
+                    <div class="review-stars-select">
+                        @for (n of [1,2,3,4,5]; track n) {
+                            <button type="button"
+                                    class="star-btn"
+                                    [class.active]="n <= newRating()"
+                                    (click)="newRating.set(n)">
+                                <i class="bi bi-star-fill"></i>
+                            </button>
+                        }
+                        <span class="star-label muted small ms-2">{{ newRating() }} / 5</span>
+                    </div>
+                </div>
+                <div class="review-form-field">
+                    <label class="review-form-label">Descrizione</label>
+                    <textarea class="form-control" rows="4"
+                              [ngModel]="newComment()" (ngModelChange)="newComment.set($event)"
+                              placeholder="Descrivi la tua esperienza…"></textarea>
+                </div>
+            </div>
+            @if (reviewError()) {
+                <div class="alert alert-danger small py-2 mx-4 mb-0">{{ reviewError() }}</div>
+            }
+            <div class="review-form-footer">
+                <button class="btn-cancel" (click)="closeReviewForm()">Annulla</button>
+                <button class="btn btn-hw-outline btn-sm"
+                        [disabled]="!newTitle().trim() || !newComment().trim() || savingReview()"
+                        (click)="submitReview()">
+                    {{ savingReview() ? 'Salvataggio…' : 'Pubblica recensione' }}
+                </button>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showBidModal()) {
+    <div class="modal-backdrop" (click)="closeBidModal()"></div>
+    <div class="modal-box rounded-3 p-4 bg-white shadow-lg" (click)="$event.stopPropagation()">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="serif mb-0">Formula un'offerta</h5>
+            <button class="btn-close" (click)="closeBidModal()" aria-label="Chiudi"></button>
+        </div>
+        @if (bidSuccess()) {
+            <div class="bid-success-state">
+                <div class="bid-success-icon"><i class="bi bi-check-circle-fill"></i></div>
+                <p class="fw-semibold mb-1">Offerta inviata!</p>
+                <p class="muted small mb-0">
+                    Hai offerto {{ formatPrice(bidAmount()!) }}.<br>
+                    Nuova offerta vincente: <strong>{{ formatPrice(auction()!.currentBest) }}</strong>
+                </p>
+            </div>
+        } @else {
+            <div class="bid-info-row mb-3">
+                <div class="bid-info-item">
+                    <span class="bid-info-label">Offerta attuale</span>
+                    <span class="bid-info-value">{{ formatPrice(auction()!.currentBest) }}</span>
+                </div>
+                <div class="bid-info-divider"></div>
+                <div class="bid-info-item">
+                    <span class="bid-info-label">Offerta minima</span>
+                    <span class="bid-info-value accent">{{ formatPrice(minBid) }}</span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label small text-uppercase muted">La tua offerta (€)</label>
+                <input type="number" class="form-control"
+                       [ngModel]="bidAmount()" (ngModelChange)="bidAmount.set($event); bidError.set(null)"
+                       [min]="minBid" step="1000" placeholder="Es. {{ minBid }}" />
+                <div class="form-text muted small mt-1">Deve essere almeno €2.000 superiore all'offerta corrente.</div>
+            </div>
+            @if (bidError()) {
+                <div class="alert alert-danger small py-2 mb-3">{{ bidError() }}</div>
+            }
+            <div class="d-flex gap-2 justify-content-end">
+                <button class="btn-cancel" (click)="closeBidModal()">Annulla</button>
+                <button class="btn-bid-submit"
+                        [disabled]="bidSending() || !bidAmount()"
+                        (click)="submitBid()">
+                    {{ bidSending() ? 'Invio…' : 'Conferma offerta' }}
+                </button>
+            </div>
+        }
+    </div>
+}
+
+@if (showBidHistory()) {
+    <div class="modal-backdrop" (click)="closeBidHistory()"></div>
+    <div class="modal-box modal-box-wide rounded-3 p-4 bg-white shadow-lg" (click)="$event.stopPropagation()">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="serif mb-0">Cronologia offerte</h5>
+            <button class="btn-close" (click)="closeBidHistory()" aria-label="Chiudi"></button>
+        </div>
+        @if (bidsLoading()) {
+            <p class="muted small">Caricamento…</p>
+        } @else if (bids().length === 0) {
+            <div class="bid-history-empty">
+                <i class="bi bi-inbox bid-history-empty-icon"></i>
+                <p class="muted small mb-0">Nessuna offerta ancora.</p>
+            </div>
+        } @else {
+            <div class="bid-history-list">
+                @for (b of bids(); track b.id) {
+                    <div class="bid-history-row">
+                        <div class="bid-history-avatar">
+                            {{ (b.buyerName || '?').charAt(0).toUpperCase() }}
+                        </div>
+                        <div class="bid-history-info">
+                            <span class="bid-history-name">{{ b.buyerName || 'Utente sconosciuto' }}</span>
+                            <span class="bid-history-date">{{ formatBidDate(b.placedAt) }}</span>
+                        </div>
+                        <div class="bid-history-amount">{{ formatPrice(b.amount) }}</div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+
+@if (showRentalModal()) {
+    <app-rental-request-modal
+            [postId]="property()!.id"
+            (closed)="showRentalModal.set(false)"
+            (submitted)="showRentalModal.set(false); rentalRequestSent.set(true)"
+    />
+}

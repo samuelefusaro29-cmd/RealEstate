@@ -1,0 +1,117 @@
+<section class="page-pad">
+    <div class="container">
+
+        <h1 class="serif mb-4">I miei affitti</h1>
+
+        <div class="hw-tabs mb-4">
+            <button class="hw-tab" [class.active]="tab() === 'requests'" (click)="tab.set('requests')">
+                Richieste inviate
+                @if (requests().length) {
+                    <span class="hw-tab-count">{{ requests().length }}</span>
+                }
+            </button>
+            <button class="hw-tab" [class.active]="tab() === 'contracts'" (click)="tab.set('contracts')">
+                Contratti attivi
+                @if (contracts().length) {
+                    <span class="hw-tab-count">{{ contracts().length }}</span>
+                }
+            </button>
+        </div>
+
+        @if (loading()) { <p class="muted">Caricamento...</p> }
+
+        @if (terminateError()) {
+            <div class="alert alert-danger small py-2 mb-3">{{ terminateError() }}</div>
+        }
+
+        @if (tab() === 'requests') {
+            @if (requests().length === 0) {
+                <div class="empty-state">
+                    <p class="muted mb-3">Non hai ancora inviato richieste di affitto.</p>
+                    <a routerLink="/properties" class="btn btn-hw">Cerca immobili</a>
+                </div>
+            } @else {
+                <div class="rental-list">
+                    @for (r of requests(); track r.id) {
+                        <div class="rental-card">
+                            <div class="rental-card-top">
+                                <div>
+                                    <span class="muted small">Annuncio #{{ r.postId }}</span>
+                                    <div class="mt-1">
+                    <span class="status-badge" [ngClass]="statusClass(r.status)">
+                      {{ statusLabel(r.status) }}
+                    </span>
+                                    </div>
+                                </div>
+                                <a [routerLink]="['/properties', r.postId]" class="btn btn-sm btn-hw-outline">Vedi annuncio</a>
+                            </div>
+                            @if (r.message) {
+                                <p class="rental-message">"{{ r.message }}"</p>
+                            }
+                            <div class="rental-dates">
+                                <span>📅 Dal <strong>{{ r.desiredStart | date:'dd/MM/yyyy' }}</strong></span>
+                                <span>al <strong>{{ r.desiredEnd | date:'dd/MM/yyyy' }}</strong></span>
+                            </div>
+                            <div class="rental-card-footer">
+                                <span class="muted small">Inviata il {{ r.createdAt | date:'dd/MM/yyyy' }}</span>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+
+        @if (tab() === 'contracts') {
+            @if (contracts().length === 0) {
+                <div class="empty-state">
+                    <p class="muted">Nessun contratto di affitto attivo.</p>
+                </div>
+            } @else {
+                <div class="rental-list">
+                    @for (c of contracts(); track c.id) {
+                        <div class="rental-card" [class.terminated]="c.status === 'TERMINATED'">
+                            <div class="rental-card-top">
+                                <div>
+                                    <span class="muted small">Annuncio #{{ c.postId }}</span>
+                                    <div class="mt-1">
+                    <span class="status-badge" [ngClass]="statusClass(c.status)">
+                      {{ statusLabel(c.status) }}
+                    </span>
+                                    </div>
+                                </div>
+                                <span class="price-new fs-5">{{ formatPrice(c.monthlyPrice) }}/mese</span>
+                            </div>
+                            <div class="rental-dates">
+                                <span>📅 Dal <strong>{{ c.startDate | date:'dd/MM/yyyy' }}</strong></span>
+                                <span>al <strong>{{ c.endDate | date:'dd/MM/yyyy' }}</strong></span>
+                            </div>
+                            <div class="rental-card-footer">
+                                <a [routerLink]="['/properties', c.postId]" class="btn btn-sm btn-hw-outline">Vedi immobile</a>
+                                @if (c.status === 'ACTIVE') {
+                                    @if (rescissionSent() === c.id) {
+                                        <span class="text-success small">
+            <i class="bi bi-check-circle me-1"></i>Richiesta inviata al proprietario
+        </span>
+                                    } @else {
+                                        <button
+                                                class="btn btn-sm btn-outline-danger"
+                                                [disabled]="terminatingId() === c.id"
+                                                (click)="requestRescission(c)">
+                                            @if (terminatingId() === c.id) {
+                                                <span class="spinner-border spinner-border-sm me-1"></span>
+                                            } @else {
+                                                <i class="bi bi-envelope me-1"></i>
+                                            }
+                                            Richiesta rescissione anticipata
+                                        </button>
+                                    }
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        }
+
+    </div>
+</section>
