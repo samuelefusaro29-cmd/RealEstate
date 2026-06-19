@@ -139,6 +139,68 @@
                         }
                     }
                 </div>
+
+                <div class="col-md-8 position-relative">
+                    <label class="form-label small text-uppercase muted">Via / Indirizzo</label>
+                    <input type="text" class="form-control" name="street"
+                           [(ngModel)]="re.street"
+                           placeholder="Es: Via Roma"
+                           required
+                           autocomplete="off"
+                           (input)="onStreetInput()"
+                           (blur)="hideSuggestions()"
+                           #streetField="ngModel">
+                    @if (streetField.invalid && streetField.touched) {
+                        <div class="text-danger small mt-1">La via è obbligatoria.</div>
+                    }
+                    @if (showSuggestions() && addressSuggestions().length > 0) {
+                        <ul class="list-group position-absolute w-100 shadow-sm"
+                            style="z-index:1000; top:100%; left:0;">
+                            @for (s of addressSuggestions(); track s.display_name) {
+                                <li class="list-group-item list-group-item-action small py-2"
+                                    style="cursor:pointer;"
+                                    (mousedown)="selectSuggestion(s)">
+                                    {{ s.display_name }}
+                                </li>
+                            }
+                        </ul>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small text-uppercase muted">N° civico</label>
+                    <input type="text" class="form-control" name="civicNumber"
+                           [(ngModel)]="re.civicNumber"
+                           placeholder="Es: 12">
+                </div>
+
+                <div class="col-md-5">
+                    <label class="form-label small text-uppercase muted">Città</label>
+                    <input type="text" class="form-control" name="city"
+                           [(ngModel)]="re.city"
+                           placeholder="Es: Roma"
+                           required
+                           #cityField="ngModel">
+                    @if (cityField.invalid && cityField.touched) {
+                        <div class="text-danger small mt-1">La città è obbligatoria.</div>
+                    }
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label small text-uppercase muted">CAP</label>
+                    <input type="text" class="form-control" name="cap"
+                           [(ngModel)]="re.cap"
+                           placeholder="Es: 00100"
+                           maxlength="5">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-uppercase muted">Provincia</label>
+                    <input type="text" class="form-control" name="province"
+                           [(ngModel)]="re.province"
+                           placeholder="Es: RM"
+                           maxlength="3">
+                </div>
             </div>
 
             @if (error()) {
